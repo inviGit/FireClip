@@ -15,7 +15,7 @@ import com.example.fireclip.logic.CreateUser;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button buttonCreateUser;
+    private Button buttonCreateUser, buttonLogin;
     private Intent intent;
     private SqLiteDbInterface sqLiteDbInterface;
     private Cursor res;
@@ -37,6 +37,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 intent = new Intent(MainActivity.this, CreateUser.class);
+                intent.putExtra("maintocreate", "create");
+                startActivity(intent);
+            }
+        });
+        buttonLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                intent = new Intent(MainActivity.this, CreateUser.class);
+                intent.putExtra("maintocreate", "signin");
                 startActivity(intent);
             }
         });
@@ -44,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initView() {
         buttonCreateUser = findViewById(R.id.buttonCreateUser);
+        buttonLogin = findViewById(R.id.buttonLogin);
     }
 
     @Override

@@ -8,10 +8,26 @@
     android:gravity="center"
     tools:context=".MainActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Account or Login as a guest"/>
+
     <Button
         android:id="@+id/buttonCreateUser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Create User"/>
+        android:text="Signup"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="\n\nAlready have an account?"/>
+
+    <Button
+        android:id="@+id/buttonLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SignIn"/>
 
 </LinearLayout>

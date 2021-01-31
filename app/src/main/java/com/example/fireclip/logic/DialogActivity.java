@@ -93,7 +93,6 @@ public class DialogActivity extends AppCompatActivity {
                 });
             }
         });
-
         dialogSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -16,10 +16,22 @@
         android:layout_height="wrap_content"
         android:hint="Enter Username"/>
 
+    <EditText
+        android:id="@+id/editPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:hint="Enter Password"/>
+
+    <Button
+        android:id="@+id/buttonsign"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <Button
         android:id="@+id/buttonConnect"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="connect"/>
+        android:text="connect as guest"/>
 
 </LinearLayout>
