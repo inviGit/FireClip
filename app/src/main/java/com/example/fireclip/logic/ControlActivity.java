@@ -66,7 +66,7 @@ public class ControlActivity extends AppCompatActivity {
                                                         .append("3. For security, the Android copied text is not send to desktop automatically.\n\n")
                                                         .append("4. To send the Android copied text to desktop PRESS SEND from the notification.\n\n").toString()
                                                 )
-                                                .setPositiveButton("Close FireClip app", new DialogInterface.OnClickListener() {
+                                                .setPositiveButton("Minimize FireClip app", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialogInterface, int i) {
                                                         finishAffinity();

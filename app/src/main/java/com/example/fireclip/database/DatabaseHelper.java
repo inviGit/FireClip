@@ -32,11 +32,10 @@ public class DatabaseHelper extends SQLiteOpenHelper implements SqLiteDbInterfac
         onCreate(db);
     }
 
-    public boolean insertData(String name, int setupDone) {
+    public boolean insertData(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_2,name);
-        contentValues.put(COL_3,setupDone);
         long result = db.insert(TABLE_NAME,null ,contentValues);
         if(result == -1) {
             Log.d("hi", "sqlite db failed");
@@ -53,15 +52,10 @@ public class DatabaseHelper extends SQLiteOpenHelper implements SqLiteDbInterfac
         return res;
     }
 
-    public boolean updateData(String name, int setupDone) {
+    public boolean updateData(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        if(!name.equals("")){
             contentValues.put(COL_2,name);
-            contentValues.put(COL_3,setupDone);
-        }else {
-            contentValues.put(COL_3, setupDone);
-        }
         db.update(TABLE_NAME, contentValues, "username=?",new String[] { name });
         return true;
     }

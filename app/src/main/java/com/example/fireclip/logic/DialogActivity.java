@@ -4,59 +4,39 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.fireclip.R;
-import com.example.fireclip.database.DatabaseHelper;
-import com.example.fireclip.interfaces.SqLiteDbInterface;
+import com.example.fireclip.database.FirebaseDbImpli;
+import com.example.fireclip.interfaces.FirebaseDBinterface;
+import com.example.fireclip.interfaces.FirebaseListener;
 import com.example.fireclip.service.ClipService;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class DialogActivity extends AppCompatActivity {
 
-    private FirebaseDatabase database;
-    private DatabaseReference myref;
-    private SqLiteDbInterface sqLiteDbInterface;
     private ClipboardManager clipboardManager;
     private ClipData clipData;
-    private String txtFromDevice, username;
+    private String txtFromDevice;
     private Button dialogSendButton, dialogStopButton, closeDialog;
     private TextView dialogDeviceClipText,dialogWindowClipText;
-    private Cursor res;
     private String winClip = "hi";
+
+    private FirebaseDBinterface firebaseDBinterface;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dialog);
 
-        database = FirebaseDatabase.getInstance();
-        myref = database.getReference("users");
+        firebaseDBinterface = new FirebaseDbImpli();
 
-        sqLiteDbInterface = new DatabaseHelper(this);
         clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-
-        res = sqLiteDbInterface.getAllData();
-        getUsername();
 
         initView();
         onClick();
@@ -74,29 +54,15 @@ public class DialogActivity extends AppCompatActivity {
         dialogWindowClipText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                myref.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String value = dataSnapshot.child(username)
-                                .child("winClipboard").getValue().toString();
-                        if(!winClip.equals(value) && !value.equals("")){
-                            winClip = value;
-                            clipData = ClipData.newPlainText("text",value);
-                            clipboardManager.setPrimaryClip(clipData);
-                            dialogWindowClipText.setText(value);
-                        }
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                readvalueFromFBDB();
             }
         });
+
         dialogSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                writeValueToFBDB();
+                writeValueToFBDB("androidClipboard",getClipFromDevice());
+                writeValueToFBDB("android", "1");
             }
         });
 
@@ -117,28 +83,57 @@ public class DialogActivity extends AppCompatActivity {
         });
     }
 
-    private void writeValueToFBDB() {
-        HashMap<String, Object> clipDetail = new HashMap<>();
-        clipDetail.put("androidClipboard", getClipFromDevice());
-        clipDetail.put("android", "1");
-        myref
-                .child(username).updateChildren(clipDetail)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Log.i("jfbvkj", "onComplete: ");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                        //Toast.makeText(Firebase.this, "Unsuccessful", Toast.LENGTH_SHORT).show();
-                    }
-                }).addOnSuccessListener(new OnSuccessListener<Void>() {
+    private void readvalueFromFBDB() {
+        firebaseDBinterface.readDataFromFBDB("winClipboard", new FirebaseListener() {
             @Override
-            public void onSuccess(Void aVoid) {
-                //Toast.makeText(Control.this, "Successful", Toast.LENGTH_SHORT).show();
+            public void onComplete() {
+
+            }
+
+            @Override
+            public void onFailure() {
+
+            }
+
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onDataChanged(Object res) {
+                String value = res.toString();
+                if(!winClip.equals(value) && !value.equals("")){
+                    winClip = value;
+                    clipData = ClipData.newPlainText("text",value);
+                    clipboardManager.setPrimaryClip(clipData);
+                }
+            }
+        });
+
+    }
+
+    private void writeValueToFBDB(String childName, String value) {
+
+        firebaseDBinterface.writeDataToFBDB(childName, value,  new FirebaseListener() {
+            @Override
+            public void onComplete() {
+
+            }
+
+            @Override
+            public void onFailure() {
+
+            }
+
+            @Override
+            public void onSuccess() {
+                //written
+            }
+
+            @Override
+            public void onDataChanged(Object value) {
+
             }
         });
     }
@@ -157,16 +152,5 @@ public class DialogActivity extends AppCompatActivity {
         dialogSendButton = findViewById(R.id.dialogSendButton);
         dialogStopButton = findViewById(R.id.dialogStopButton);
         closeDialog = findViewById(R.id.closeDialog);
-    }
-
-    private void getUsername() {
-        if(res.getCount() != 0) {
-            StringBuffer buffer = new StringBuffer();
-            while (res.moveToNext()) {
-                username = res.getString(1);
-            }
-        }else{
-            //please login again
-        }
     }
 }

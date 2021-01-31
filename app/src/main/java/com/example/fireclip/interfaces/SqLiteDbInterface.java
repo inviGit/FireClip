@@ -4,11 +4,11 @@ import android.database.Cursor;
 
 public interface SqLiteDbInterface {
 
-    boolean insertData(String name, int setupDone);
+    boolean insertData(String name);
 
     Cursor getAllData();
 
-    boolean updateData(String name, int setupDone);
+    boolean updateData(String name);
 
     Integer deleteData (String id);
 }

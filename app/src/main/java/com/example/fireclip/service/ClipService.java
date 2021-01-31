@@ -9,22 +9,16 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
 
 import com.example.fireclip.R;
-import com.example.fireclip.database.DatabaseHelper;
-import com.example.fireclip.interfaces.SqLiteDbInterface;
+import com.example.fireclip.database.FirebaseDbImpli;
+import com.example.fireclip.interfaces.FirebaseDBinterface;
+import com.example.fireclip.interfaces.FirebaseListener;
 import com.example.fireclip.logic.DialogActivity;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
@@ -32,26 +26,17 @@ import androidx.core.app.NotificationCompat;
 
 public class ClipService extends Service{
 
-
-    private FirebaseDatabase database;
-    private DatabaseReference myref;
-    private SqLiteDbInterface sqLiteDbInterface;
-    private Cursor res;
-    private String username;
     private ClipData clipData;
     private ClipboardManager clipboardManager;
     private String winClip = "hi";
 
+    private FirebaseDBinterface firebaseDBinterface;
+
     @Override
     public void onCreate() {
         super.onCreate();
-
-        database = FirebaseDatabase.getInstance();
-        myref = database.getReference("users");
+        firebaseDBinterface = new FirebaseDbImpli();
         clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        sqLiteDbInterface = new DatabaseHelper(this);
-        res = sqLiteDbInterface.getAllData();
-        getUsername();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startMyOwnForeground();
         else startForeground(1, new Notification());
@@ -60,34 +45,32 @@ public class ClipService extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        myref.addValueEventListener(new ValueEventListener() {
+
+        firebaseDBinterface.readDataFromFBDB("winClipboard", new FirebaseListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String value = dataSnapshot.child(username)
-                        .child("winClipboard").getValue().toString();
+            public void onComplete() {
+
+            }
+            @Override
+            public void onFailure() {
+                //failed
+            }
+            @Override
+            public void onSuccess() {
+
+            }
+            @Override
+            public void onDataChanged(Object res) {
+                String value = res.toString();
                 if(!winClip.equals(value) && !value.equals("")){
                     winClip = value;
                     clipData = ClipData.newPlainText("text",value);
                     clipboardManager.setPrimaryClip(clipData);
                 }
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
         });
-        return START_NOT_STICKY;
-    }
 
-    private void getUsername() {
-        if(res.getCount() != 0) {
-            StringBuffer buffer = new StringBuffer();
-            while (res.moveToNext()) {
-                username = res.getString(1);
-            }
-        }else{
-            //please login again
-        }
+        return START_NOT_STICKY;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
