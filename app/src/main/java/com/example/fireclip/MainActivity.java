@@ -2,11 +2,15 @@ package com.example.fireclip;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
 import com.example.fireclip.logic.ControlActivity;
 import com.example.fireclip.logic.CreateUser;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,9 +59,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(mAuth.getCurrentUser()!=null) {
+        if (mAuth.getCurrentUser() != null) {
             intent = new Intent(MainActivity.this, ControlActivity.class);
             startActivity(intent);
+            // "context" must be an Activity, Service or Application object from your app.
+
+            if (!Python.isStarted()) {
+                Python.start(new AndroidPlatform(this));
+            }
+            Python py = Python.getInstance();
+            final PyObject pyobj = py.getModule("encrypt"); // give name of your python file
+
+            // now give reference to ui elements
+            PyObject obj = null;
+
         }
     }
 }
