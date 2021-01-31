@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+    <TextView
+        android:id="@+id/dialogWindowClipText"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Desktop Copied Text"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+        android:textColor="@color/colorSuccess"
+        android:textSize="20sp"
+        android:drawableStart="@drawable/ic_laptop_windows"/>
+
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/dialogDeviceClipText"
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Copied Text"
+            android:singleLine="true"
+            android:scrollHorizontally="false"
+            android:textColor="@color/colorSuccess"
+            android:textSize="20sp"
+            android:drawableStart="@drawable/ic_content_paste"/>
+
+
+        <Button
+            android:id="@+id/dialogSendButton"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:onClick="buttonSend"
+            android:text="send to "
+            android:drawableEnd="@drawable/ic_laptop_windows" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/dialogStopButton"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:onClick="buttonSend"
+        android:text="Stop Service" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="1. Press Send to send copied text to Windows.\n2. Press Stop to stop the service.\n"/>
+
+    <Button
+        android:id="@+id/closeDialog"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:onClick="buttonSend"
+        android:text="Close" />
+
+
+    </LinearLayout>
+
+
+</ScrollView>

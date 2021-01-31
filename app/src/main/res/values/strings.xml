@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">FireClip</string>
+    <string name="channel_id">Example</string>
 </resources>
