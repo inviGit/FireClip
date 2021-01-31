@@ -15,6 +15,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements SqLiteDbInterfac
     public static final String TABLE_NAME = "user";
     public static final String COL_1 = "ID";
     public static final String COL_2 = "USERNAME";
+    public static final String COL_3 = "DETAILS";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -22,7 +23,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements SqLiteDbInterfac
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table " + TABLE_NAME +" (ID INTEGER PRIMARY KEY AUTOINCREMENT,USERNAME TEXT)");
+        db.execSQL("create table " + TABLE_NAME +" (ID INTEGER PRIMARY KEY AUTOINCREMENT,USERNAME TEXT, DETAILS INTEGER)");
     }
 
     @Override
@@ -31,10 +32,11 @@ public class DatabaseHelper extends SQLiteOpenHelper implements SqLiteDbInterfac
         onCreate(db);
     }
 
-    public boolean insertData(String name) {
+    public boolean insertData(String name, int setupDone) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_2,name);
+        contentValues.put(COL_3,setupDone);
         long result = db.insert(TABLE_NAME,null ,contentValues);
         if(result == -1) {
             Log.d("hi", "sqlite db failed");
@@ -51,10 +53,15 @@ public class DatabaseHelper extends SQLiteOpenHelper implements SqLiteDbInterfac
         return res;
     }
 
-    public boolean updateData(String name) {
+    public boolean updateData(String name, int setupDone) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_1,name);
+        if(!name.equals("")){
+            contentValues.put(COL_2,name);
+            contentValues.put(COL_3,setupDone);
+        }else {
+            contentValues.put(COL_3, setupDone);
+        }
         db.update(TABLE_NAME, contentValues, "username=?",new String[] { name });
         return true;
     }

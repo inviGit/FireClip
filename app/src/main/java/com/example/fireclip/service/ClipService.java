@@ -5,6 +5,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,9 +17,14 @@ import android.os.IBinder;
 import com.example.fireclip.R;
 import com.example.fireclip.database.DatabaseHelper;
 import com.example.fireclip.interfaces.SqLiteDbInterface;
-import com.example.fireclip.logic.ControlActivity;
 import com.example.fireclip.logic.DialogActivity;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
@@ -25,21 +32,57 @@ import androidx.core.app.NotificationCompat;
 
 public class ClipService extends Service{
 
+
+    private FirebaseDatabase database;
+    private DatabaseReference myref;
     private SqLiteDbInterface sqLiteDbInterface;
     private Cursor res;
     private String username;
+    private ClipData clipData;
+    private ClipboardManager clipboardManager;
+    private String winClip = "hi";
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        database = FirebaseDatabase.getInstance();
+        myref = database.getReference("users");
+        clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         sqLiteDbInterface = new DatabaseHelper(this);
         res = sqLiteDbInterface.getAllData();
         getUsername();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            startMyOwnForeground();
-        else
-            startForeground(1, new Notification());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startMyOwnForeground();
+        else startForeground(1, new Notification());
+    }
+
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        myref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String value = dataSnapshot.child(username)
+                        .child("android").getValue().toString();
+                int v = Integer.parseInt(value);
+                if(v == 0){
+                    String txt = dataSnapshot
+                            .child(username)
+                            .child("winClipboard").getValue().toString();
+                    if(!winClip.equals(txt) && !txt.equals("")){
+                        winClip = txt;
+                        clipData = ClipData.newPlainText("text",txt);
+                        clipboardManager.setPrimaryClip(clipData);
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        return START_NOT_STICKY;
     }
 
     private void getUsername() {
@@ -78,6 +121,7 @@ public class ClipService extends Service{
                 .setContentIntent(pendingIntent)
                 .build();
         startForeground(2, notification);
+
     }
 
     @Override
