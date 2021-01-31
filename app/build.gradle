@@ -1,16 +1,45 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.android.application'
+apply plugin: 'com.chaquo.python'
 
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.1"
     defaultConfig {
         applicationId "com.example.fireclip"
+        // give source folder to python
+        sourceSets{
+            main{
+                python{
+                    srcDirs = ["../desktop_application"]
+                }
+            }
+        }
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        //ABI selection
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        }
+
+        // here we will give path to my python.exe (on windows)
+        python {
+            buildPython "/usr/bin/python3"  // for linux
+            // buildPython "C:/path/to/python.exe"
+            // buildPython "C:/path/to/py.exe", "-3.8"
+            pip {
+                install "six==1.10.0"
+                install "numpy"
+                install "LocalPackage-1.2.3-py2.py3-none-any.whl"
+                install "-r", "../requirements.txt"
+            }
+        }
+
     }
     buildTypes {
         release {
