@@ -64,17 +64,11 @@ public class ClipService extends Service{
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String value = dataSnapshot.child(username)
-                        .child("android").getValue().toString();
-                int v = Integer.parseInt(value);
-                if(v == 0){
-                    String txt = dataSnapshot
-                            .child(username)
-                            .child("winClipboard").getValue().toString();
-                    if(!winClip.equals(txt) && !txt.equals("")){
-                        winClip = txt;
-                        clipData = ClipData.newPlainText("text",txt);
-                        clipboardManager.setPrimaryClip(clipData);
-                    }
+                        .child("winClipboard").getValue().toString();
+                if(!winClip.equals(value) && !value.equals("")){
+                    winClip = value;
+                    clipData = ClipData.newPlainText("text",value);
+                    clipboardManager.setPrimaryClip(clipData);
                 }
             }
             @Override

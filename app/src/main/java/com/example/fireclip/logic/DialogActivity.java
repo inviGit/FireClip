@@ -78,17 +78,12 @@ public class DialogActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         String value = dataSnapshot.child(username)
-                                .child("android").getValue().toString();
-                        int v = Integer.parseInt(value);
-                        if(v == 0){
-                            String txt = dataSnapshot
-                                    .child(username)
-                                    .child("winClipboard").getValue().toString();
-                            if(!winClip.equals(txt) && !txt.equals("")){
-                                winClip = txt;
-                                clipData = ClipData.newPlainText("text",txt);
-                                clipboardManager.setPrimaryClip(clipData);
-                            }
+                                .child("winClipboard").getValue().toString();
+                        if(!winClip.equals(value) && !value.equals("")){
+                            winClip = value;
+                            clipData = ClipData.newPlainText("text",value);
+                            clipboardManager.setPrimaryClip(clipData);
+                            dialogWindowClipText.setText(value);
                         }
                     }
                     @Override
@@ -128,7 +123,7 @@ public class DialogActivity extends AppCompatActivity {
         clipDetail.put("androidClipboard", getClipFromDevice());
         clipDetail.put("android", "1");
         myref
-                .child(username).setValue(clipDetail)
+                .child(username).updateChildren(clipDetail)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
