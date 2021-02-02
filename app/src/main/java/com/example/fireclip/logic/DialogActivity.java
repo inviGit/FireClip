@@ -107,6 +107,7 @@ public class DialogActivity extends AppCompatActivity {
                     winClip = value;
                     clipData = ClipData.newPlainText("text",value);
                     clipboardManager.setPrimaryClip(clipData);
+                    dialogWindowClipText.setText(winClip);
                 }
             }
         });
